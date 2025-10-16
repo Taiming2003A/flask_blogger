@@ -1,0 +1,21 @@
+
+{% extends "base.html" %}
+{% block title %}文章列表 - Mini Blog{% endblock %}
+{% block content %}
+  <h2>文章列表</h2>
+  {% if posts %}
+    <ul class="post-list">
+      {% for p in posts %}
+        <li class="post-item">
+          <h3><a href="{{ url_for('post_detail_page', post_id=p.id) }}">{{ p.title }}</a></h3>
+          <div class="meta">作者：{{ p.author }} · 文章編號 #{{ p.id }}</div>
+          <p class="snippet">
+            {{ (p.content.split('\n')[0])[:140] ~ ('…' if p.content|length > 140 else '') }}
+          </p>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>目前沒有文章。<a href="{{ url_for('new_post_page') }}">新增一篇</a>！</p>
+  {% endif %}
+{% endblock %}

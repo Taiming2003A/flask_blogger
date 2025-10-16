@@ -1,0 +1,37 @@
+
+{% extends "base.html" %}
+{% block title %}{{ post.title }} - Mini Blog{% endblock %}
+{% block content %}
+  <article class="post">
+    <h2>{{ post.title }}</h2>
+    <div class="meta">作者：{{ post.author }} · 文章編號 #{{ post.id }}</div>
+    <pre class="content">{{ post.content }}</pre>
+
+    <div class="actions">
+      <a class="btn" href="{{ url_for('index') }}">← 回列表</a>
+      <a class="btn" href="{{ url_for('edit_post_page', post_id=post.id) }}">✎ 編輯</a>
+
+      <!-- Delete button uses REST API (DELETE) via fetch; fallback form below -->
+      <button class="btn danger" id="deleteBtn">🗑 刪除</button>
+      <form id="fallbackDelete" method="post" action="{{ url_for('delete_post_action', post_id=post.id) }}"></form>
+    </div>
+  </article>
+
+  <script>
+    const btn = document.getElementById('deleteBtn');
+    btn?.addEventListener('click', async () => {
+      if (!confirm('確定要刪除這篇文章嗎？')) return;
+      try {
+        const res = await fetch(`/api/posts/{{ post.id }}`, { method: 'DELETE' });
+        if (res.ok) {
+          window.location.href = "{{ url_for('index') }}";
+        } else {
+          // If API fails (e.g., CORS/old browsers), fallback to HTML form
+          document.getElementById('fallbackDelete').submit();
+        }
+      } catch (e) {
+        document.getElementById('fallbackDelete').submit();
+      }
+    });
+  </script>
+{% endblock %}
